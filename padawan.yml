@@ -1,0 +1,19 @@
+name: example
+
+http:
+  port: 30303
+  adminPort: 30304
+  connectorType: blocking
+  minThreads: 8
+  maxThreads: 16
+  acceptorThreads: 2
+
+sample:
+  master: 127.0.0.1:6379:0
+  shards:
+    - 127.0.0.1:7000:0
+    - 127.0.0.1:7001:0
+  masterActiveThreads: 2
+  shardActiveThreads: 2
+
+

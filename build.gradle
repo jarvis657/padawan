@@ -1,0 +1,68 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+apply plugin: 'jacoco'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    provided
+    testCompile.extendsFrom provided
+    compile.transitive = true
+}
+
+group = 'com.jedi.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Jedis Bundle'
+sourceCompatibility =1.6
+targetCompatibility =1.6
+
+dependencies {
+    compile 'com.yammer.dropwizard:dropwizard-core:0.6.2',
+            'com.yammer.dropwizard:dropwizard-views:0.6.2',
+            'com.google.inject.extensions:guice-servlet:3.0',
+            'com.sun.jersey.contribs:jersey-guice:1.9.1',
+            'org.projectlombok:lombok:0.11.8',
+            'redis.clients:jedis:2.4.2',
+
+    testCompile ('com.yammer.dropwizard:dropwizard-testing:0.6.2'){
+        exclude group: 'org.mockito'
+    }
+    testCompile 'org.testng:testng:6.1.1'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
+
+sourceSets.main.compileClasspath += configurations.provided
+
+mainClassName = 'com.jedi.example.SampleService'
+
+run {
+    args 'server', 'padawan.yml'
+}
+
+test {
+    useTestNG()
+    outputs.upToDateWhen { false }
+    afterTest { desc, result ->
+        println "[TEST] ${desc.className} - ${desc.name} : ${result}"
+    }
+}
+
+jar {
+    manifest{
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+
+if(hasProperty("xlint")) {
+    tasks.withType(Compile) {
+        options.compilerArgs << "-Xlint:unchecked"
+    }
+}
